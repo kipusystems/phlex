@@ -13,7 +13,7 @@ module Phlex
 		VOID_ELEMENTS = Concurrent::Map.new
 
 		# A list of HTML attributes that have the potential to execute unsafe JavaScript.
-		EVENT_ATTRIBUTES = %w[onabort onafterprint onbeforeprint onbeforeunload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu oncopy oncuechange oncut ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onhashchange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmessage onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpaste onpause onplay onplaying onpopstate onprogress onratechange onreset onresize onscroll onsearch onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate ontoggle onunload onvolumechange onwaiting onwheel].to_h { [_1, true] }.freeze
+		EVENT_ATTRIBUTES = %w[onabort onafterprint onbeforeprint onbeforeunload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu oncopy oncuechange oncut ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onhashchange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmessage onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpaste onpause onplay onplaying onpopstate onprogress onratechange onreset onresize onscroll onsearch onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate ontoggle onunload onvolumechange onwaiting onwheel].to_h { |v| [v, true] }.freeze
 
 		UNBUFFERED_MUTEX = Mutex.new
 
@@ -22,21 +22,22 @@ module Phlex
 
 		class << self
 			# Render the view to a String. Arguments are delegated to <code>new</code>.
-			def call(...)
-				new(...).call
+			def call(*args, &block)
+				new(*args, &block).call
 			end
-
+			ruby2_keywords :call if respond_to?(:ruby2_keywords, true)
 			alias_method :render, :call
 
-			def new(*args, **kwargs, &block)
+			def new(*args, &block)
 				if block
-					object = super(*args, **kwargs, &nil)
+					object = super(*args, &nil)
 					object.instance_variable_set(:@_content_block, block)
 					object
 				else
 					super
 				end
 			end
+			ruby2_keywords :new if respond_to?(:ruby2_keywords, true)
 
 			# @api private
 			def rendered_at_least_once!
@@ -286,14 +287,15 @@ module Phlex
 		end
 
 		# @api private
-		private def __attributes__(**attributes)
-			__final_attributes__(**attributes).tap do |buffer|
+		private def __attributes__(attributes)
+			__final_attributes__(attributes).tap do |buffer|
 				Phlex::ATTRIBUTE_CACHE[attributes.hash] = buffer.freeze
 			end
 		end
 
 		# @api private
-		private def __final_attributes__(**attributes)
+		private def __final_attributes__(attributes)
+			attributes = {} unless attributes.is_a?(Hash)
 			if attributes[:href]&.start_with?(/\s*javascript:/)
 				attributes.delete(:href)
 			end

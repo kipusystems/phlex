@@ -3,4 +3,10 @@ inherit_from:
   - "https://www.goodcop.style/tabs.yml"
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 2.6
+  Exclude:
+    - "sus/**/*"
+    - "vendor/**/*"
+
+Bundler/GemFilename:
+  EnforcedStyle: gems.rb

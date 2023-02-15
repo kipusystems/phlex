@@ -2,7 +2,7 @@
 
 module Example
 	class LayoutComponent < Phlex::HTML
-		def initialize(title: "Example")
+		def initialize(*, title: "Example")
 			@title = title
 		end
 

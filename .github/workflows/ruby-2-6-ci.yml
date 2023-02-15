@@ -1,0 +1,46 @@
+name: Ruby 2.6 CI
+on:
+  push:
+    branches: ["ruby-2.6"]
+  pull_request:
+    branches: ["ruby-2.6"]
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+        ruby-version:
+          - "2.6"
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: false
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Tests
+        run: bundle exec sus
+
+  rubocop:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: false
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Rubocop
+        run: bundle exec rubocop

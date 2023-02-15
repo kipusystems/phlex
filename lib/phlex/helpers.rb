@@ -5,7 +5,10 @@ if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.0")
 end
 
 module Phlex::Helpers
-	private def tokens(*tokens, **conditional_tokens)
+	private
+
+	def tokens(*tokens)
+		conditional_tokens = tokens.last.is_a?(Hash) ? tokens.pop : {}
 		conditional_tokens.each do |condition, token|
 			truthy = case condition
 				when Symbol then send(condition)
@@ -28,7 +31,7 @@ module Phlex::Helpers
 		tokens.join(" ")
 	end
 
-	private def __append_token__(tokens, token)
+	def __append_token__(tokens, token)
 		case token
 			when nil then nil
 			when String then tokens << token
@@ -39,8 +42,8 @@ module Phlex::Helpers
 		end
 	end
 
-	private def classes(*tokens, **conditional_tokens)
-		tokens = self.tokens(*tokens, **conditional_tokens)
+	def classes(*tokens)
+		tokens = tokens(*tokens)
 
 		if tokens.empty?
 			{}
@@ -49,7 +52,7 @@ module Phlex::Helpers
 		end
 	end
 
-	private def mix(*args)
+	def mix(*args)
 		args.each_with_object({}) do |object, result|
 			result.merge!(object) do |_key, old, new|
 				case new
@@ -65,7 +68,7 @@ module Phlex::Helpers
 			end
 
 			result.transform_keys! do |key|
-				key.end_with?("!") ? key.name.chop.to_sym : key
+				key.to_s.end_with?("!") ? key.name.chop.to_sym : key
 			end
 		end
 	end

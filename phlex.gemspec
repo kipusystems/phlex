@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 	spec.description = "A high-performance view framework optimised for developer happiness."
 	spec.homepage = "https://www.phlex.fun"
 	spec.license = "MIT"
-	spec.required_ruby_version = ">= 2.7"
+	spec.required_ruby_version = ">= 2.6"
 
 	spec.metadata["homepage_uri"] = spec.homepage
 	spec.metadata["source_code_uri"] = "https://github.com/joeldrapper/phlex"
@@ -35,8 +35,8 @@ Gem::Specification.new do |spec|
 
 	spec.add_dependency "concurrent-ruby", "~> 1.2"
 	spec.add_dependency "zeitwerk", "~> 2.6"
+	spec.add_development_dependency "sus", "~> 0.16"
 
 	# For more information and examples about making a new gem, check out our
 	# guide at: https://bundler.io/guides/creating_gem.html
-	spec.metadata["rubygems_mfa_required"] = "true"
 end

@@ -9,14 +9,16 @@ module Phlex::Elements
 		class_eval(<<-RUBY, __FILE__, __LINE__ + 1)
 			# frozen_string_literal: true
 
-			def #{element}(**attributes, &block)
+			def #{element}(attributes = {}, **kwattributes, &block)
+				attributes = {} unless attributes.is_a?(Hash)
+				attributes.merge!(kwattributes)
 				if attributes.length > 0
 					if block_given?
-						@_target << "<#{tag}" << (Phlex::ATTRIBUTE_CACHE[attributes.hash] || __attributes__(**attributes)) << ">"
+						@_target << "<#{tag}" << (Phlex::ATTRIBUTE_CACHE[attributes.hash] || __attributes__(attributes)) << ">"
 						yield_content(&block)
 						@_target << "</#{tag}>"
 					else
-						@_target << "<#{tag}" << (Phlex::ATTRIBUTE_CACHE[attributes.hash] || __attributes__(**attributes)) << "></#{tag}>"
+						@_target << "<#{tag}" << (Phlex::ATTRIBUTE_CACHE[attributes.hash] || __attributes__(attributes)) << "></#{tag}>"
 					end
 				else
 					if block_given?
